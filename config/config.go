@@ -1,8 +1,10 @@
 package config
 
 import (
+	"log"
 	"os"
-	"strconv"
+
+	"github.com/joho/godotenv"
 )
 
 type ServerConfig struct {
@@ -21,32 +23,27 @@ type Config struct {
 
 var Conf *Config
 
+//-----------------------------------------------------------------------------------------------
+
 func NewConfig() {
+	godotenv.Load(".env")
 	Conf = &Config{
 		Server: ServerConfig{
 			ListenAddress: getEnv("LISTEN_ADDRESS", "localhost:8080"),
 		},
-		TestMode:    getEnvAsBool("TEST_MODE", false),
-		SecretKey:   getEnv("SECRET_KEY", "very secret key"),
-		DatabaseURI: getEnv("DATABASE_URI", ""),
-		// DatabaseName:          getEnv("DATABASE_NAME", "db"),
+		SecretKey:             getEnv("SECRET_KEY", "very secret key"),
+		DatabaseURI:           getEnv("DATABASE_URI", ""),
 		AccessTokenTimeDelta:  getEnv("ACCESS_TOKEN_TIME_DELTA", "15m"),
 		RefreshTokenTimeDelta: getEnv("REFRESH_TOKEN_TIME_DELTA", "24h"),
 	}
+	log.Println(Conf.DatabaseURI, getEnv("DATABASE_URI", ""), "hehe")
 }
+
+//-----------------------------------------------------------------------------------------------
 
 func getEnv(key, defaultVal string) string {
 	if value, exists := os.LookupEnv(key); exists {
 		return value
 	}
-	return defaultVal
-}
-
-func getEnvAsBool(name string, defaultVal bool) bool {
-	valStr := getEnv(name, "")
-	if val, err := strconv.ParseBool(valStr); err == nil {
-		return val
-	}
-
 	return defaultVal
 }

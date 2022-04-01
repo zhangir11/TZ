@@ -53,7 +53,7 @@ func ParseAccessToken(tokenString string) (*AccessToken, error) {
 
 	tokenData, ok := token.Claims.(*claims)
 	if !ok {
-		return &AccessToken{}, errors.New("не удалось извлечь данные из access_token")
+		return &AccessToken{}, errors.New("Token is invalid")
 	}
 
 	return &AccessToken{

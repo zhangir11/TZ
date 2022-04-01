@@ -1,6 +1,6 @@
 package service
 
-import "authentication/pkg/storage"
+import storage "authentication/pkg/storagev2"
 
 type AuthSession struct {
 	AccessToken  string

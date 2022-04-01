@@ -6,11 +6,12 @@ import (
 	"strings"
 )
 
+//----------------------------------------------------------------------------------------------------------------------
 func (h *Handler) Token(w http.ResponseWriter, r *http.Request) {
 	guid := r.URL.Query().Get("guid")
 
-	session, code, err := h.authService.CreateAuthSession(guid)
-	if err != nil {
+	session, code := h.authService.CreateAuthSession(guid)
+	if code != http.StatusOK {
 		w.WriteHeader(code)
 		return
 	}
@@ -32,6 +33,7 @@ func (h *Handler) Token(w http.ResponseWriter, r *http.Request) {
 	w.Write(response)
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 func (h *Handler) Refresh(w http.ResponseWriter, r *http.Request) {
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {
@@ -58,14 +60,14 @@ func (h *Handler) Refresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	guid, code, err := h.authService.DeleteAuthSession(headerParts[1], request.RefreshToken)
-	if err != nil {
+	guid, code := h.authService.DeleteAuthSession(headerParts[1], request.RefreshToken)
+	if code != http.StatusOK {
 		w.WriteHeader(code)
 		return
 	}
 
-	session, code, err := h.authService.CreateAuthSession(guid)
-	if err != nil {
+	session, code := h.authService.CreateAuthSession(guid)
+	if code != http.StatusOK {
 		w.WriteHeader(code)
 		return
 	}

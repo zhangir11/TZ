@@ -11,12 +11,13 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+//-------------------------------------------------------------------------------------------------------
 func SetupConnection() *mongo.Database {
 	serverAPIOptions := options.ServerAPI(options.ServerAPIVersion1)
 	clientOptions := options.Client().
 		ApplyURI(config.Conf.DatabaseURI).
 		SetServerAPIOptions(serverAPIOptions)
-
+	log.Println(config.Conf.DatabaseURI)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	client, err := mongo.Connect(ctx, clientOptions)
@@ -36,6 +37,8 @@ func SetupConnection() *mongo.Database {
 	return client.Database(config.Conf.DatabaseName)
 }
 
+//-------------------------------------------------------------------------------------------------------
+
 func (s *SessionManager) Insert(value *Session) error {
 	if _, err := s.collection.InsertOne(context.Background(), value); err != nil {
 		return err
@@ -43,6 +46,8 @@ func (s *SessionManager) Insert(value *Session) error {
 
 	return nil
 }
+
+//-------------------------------------------------------------------------------------------------------
 
 func (s *SessionManager) Get(guid string) (*Session, error) {
 	var result Session
@@ -53,6 +58,8 @@ func (s *SessionManager) Get(guid string) (*Session, error) {
 
 	return &result, nil
 }
+
+//-------------------------------------------------------------------------------------------------------
 
 func (s *SessionManager) Delete(guid string) error {
 	if _, err := s.collection.DeleteOne(context.Background(), bson.D{{"guid", guid}}); err != nil {

@@ -1,6 +1,8 @@
 package server
 
-import "authentication/pkg/service"
+import (
+	service "authentication/pkg/servicev2"
+)
 
 type Handler struct {
 	authService service.Service

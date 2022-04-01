@@ -1,20 +1,20 @@
 package server
 
 import (
-	"authentication/pkg/service"
-	"authentication/pkg/storage"
+	service "authentication/pkg/servicev2"
+	storage "authentication/pkg/storagev2"
 	"context"
 	"log"
 	"net/http"
 	"time"
-
-	"github.com/gorilla/mux"
 )
 
 type Server struct {
 	httpServer  *http.Server
 	authService service.Service
 }
+
+//-----------------------------------------------------------------------------------------------
 
 func NewServer() *Server {
 	db := storage.SetupConnection()
@@ -25,8 +25,10 @@ func NewServer() *Server {
 	}
 }
 
+//-----------------------------------------------------------------------------------------------
+
 func (s *Server) StartServer(listenAddress string) error {
-	router := mux.NewRouter()
+	router := http.NewServeMux()
 
 	log.Printf("Server launched: %s ... ", listenAddress)
 
@@ -36,13 +38,11 @@ func (s *Server) StartServer(listenAddress string) error {
 		Addr:    listenAddress,
 		Handler: router,
 	}
-
+	ctx, shutdown := context.WithTimeout(context.Background(), 5*time.Second)
+	defer shutdown()
 	if err := s.httpServer.ListenAndServe(); err != nil {
 		log.Fatal("Unable to launch a code: " + err.Error())
 	}
-
-	ctx, shutdown := context.WithTimeout(context.Background(), 5*time.Second)
-	defer shutdown()
 
 	return s.httpServer.Shutdown(ctx)
 }

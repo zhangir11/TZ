@@ -2,7 +2,7 @@ package main
 
 import (
 	"authentication/config"
-	"authentication/internal/server"
+	server "authentication/internal/serverv2"
 	"log"
 )
 
